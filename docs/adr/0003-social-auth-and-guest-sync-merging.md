@@ -1,0 +1,3 @@
+# Social Authentication with Anonymous Guest Account Merging
+
+To eliminate friction in the paddock, users can create vehicles, tracks, and track day sessions offline as an anonymous guest in local IndexedDB. We decided to use Spring Security with OAuth2/OIDC (Google, Facebook) issuing stateless JWTs for cloud authentication, paired with a client-side account merging protocol. When an anonymous user signs in via OAuth2, their existing local IndexedDB records are claimed by the newly authenticated cloud identity and pushed to PostgreSQL using last-write-wins timestamps rather than being overwritten or discarded.
