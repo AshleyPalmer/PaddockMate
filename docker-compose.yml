@@ -1,0 +1,88 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/gateway/Dockerfile
+    container_name: paddockmate-gateway
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/gateway/certs:/etc/nginx/certs
+    networks:
+      - paddockmate-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: paddockmate-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: paddockmate
+      POSTGRES_USER: paddockmate
+      POSTGRES_PASSWORD: paddockmate
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paddockmate -d paddockmate"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - paddockmate-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: dev
+    container_name: paddockmate-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/paddockmate
+      SPRING_DATASOURCE_USERNAME: paddockmate
+      SPRING_DATASOURCE_PASSWORD: paddockmate
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/build.gradle.kts:/app/build.gradle.kts
+      - gradle_cache:/root/.gradle
+    networks:
+      - paddockmate-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      target: dev
+    container_name: paddockmate-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8080
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    networks:
+      - paddockmate-network
+
+volumes:
+  postgres_data:
+  gradle_cache:
+  frontend_node_modules:
+
+networks:
+  paddockmate-network:
+    driver: bridge

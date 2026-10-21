@@ -57,7 +57,7 @@ docker compose up -d
 ```
 
 > [!NOTE]
-> The gateway container automatically generates a local development SSL certificate on startup. To install a fully trusted certificate with a green browser padlock, run `./scripts/setup-dev-certs.sh` (requires `mkcert`).
+> The gateway container automatically generates a local development SSL certificate on startup. On first load in your browser, click **Advanced ➔ Proceed** (or type `thisisunsafe`), or double-click `docker/gateway/certs/dev.paddockmate.app.crt` and install it into your operating system's Trusted Root Certification Authorities for a permanent green padlock.
 
 Once running:
 - **Application (HTTPS via Gateway)**: [https://dev.paddockmate.app](https://dev.paddockmate.app)
@@ -132,7 +132,6 @@ npm run build
 ├── docs/
 │   ├── adr/             # Architecture Decision Records
 │   └── agents/          # Agent tooling configurations
-├── scripts/             # Developer helper scripts (e.g. SSL certificates)
 ├── backend/             # Spring Boot 3 REST API (Java 21 + Gradle)
 └── frontend/            # Vue 3 PWA (Vite + TypeScript)
 ```
