@@ -1,0 +1,32 @@
+name: Feature Request
+description: Propose an idea, new vehicle telemetry field, or improvement for PaddockMate
+title: "[Feature]: "
+labels: ["triage", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to make PaddockMate better in the paddock? Let us know below!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: Is your feature request related to a specific paddock situation or limitation?
+      placeholder: When coming off track with multiple drivers sharing a vehicle...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution or new feature you would like to see.
+      placeholder: Add a toggle to switch driver profiles within the same track day...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative options or workarounds?
+    validations:
+      required: false

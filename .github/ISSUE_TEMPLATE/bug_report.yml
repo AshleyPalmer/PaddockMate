@@ -1,0 +1,58 @@
+name: Bug Report
+description: Report a reproducible problem or unexpected behaviour in PaddockMate
+title: "[Bug]: "
+labels: ["triage", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please provide as much detail as possible to help reproduce and fix the bug.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of the bug and unexpected behaviour.
+      placeholder: When logging a session in the pit lane...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we trigger this bug?
+      placeholder: |
+        1. Navigate to 'Track Days'
+        2. Select 'Brands Hatch Indy'
+        3. Enter hot tyre pressure for Front Left
+        4. See error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: What did you expect to happen instead?
+      placeholder: The tyre bleed calculation should display 4.0 PSI...
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Device / Browser Environment
+      description: What device and browser were you using?
+      options:
+        - Mobile PWA (iOS Safari)
+        - Mobile PWA (Android Chrome)
+        - Desktop (Chrome / Chromium)
+        - Desktop (Firefox)
+        - Desktop (Safari)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any relevant screenshots, logs, or vehicle/track specifics.
+    validations:
+      required: false
