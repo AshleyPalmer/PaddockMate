@@ -21,15 +21,15 @@ services:
     container_name: paddockmate-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: paddockmate
-      POSTGRES_USER: paddockmate
-      POSTGRES_PASSWORD: paddockmate
+      POSTGRES_DB: ${POSTGRES_DB:-paddockmate}
+      POSTGRES_USER: ${POSTGRES_USER:-paddockmate}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-paddockmate}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U paddockmate -d paddockmate"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-paddockmate} -d $${POSTGRES_DB:-paddockmate}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -47,9 +47,9 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/paddockmate
-      SPRING_DATASOURCE_USERNAME: paddockmate
-      SPRING_DATASOURCE_PASSWORD: paddockmate
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/paddockmate}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-paddockmate}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-paddockmate}
     ports:
       - "8080:8080"
     volumes:
@@ -69,7 +69,7 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_PROXY_TARGET: http://backend:8080
+      VITE_API_PROXY_TARGET: ${VITE_API_PROXY_TARGET:-http://backend:8080}
     ports:
       - "5173:5173"
     volumes:

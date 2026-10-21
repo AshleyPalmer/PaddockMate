@@ -122,6 +122,7 @@ npm run build
 ## Project Structure
 
 ```
+├── .env.example         # Template for environment configuration
 ├── AGENTS.md            # Agent instructions and development commands
 ├── CONTEXT.md           # Project domain glossary
 ├── docker-compose.yml   # Full-stack Docker Compose definition

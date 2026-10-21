@@ -6,6 +6,10 @@
 - All documentation, code comments, UI text, commit messages, and identifiers must strictly use **British English (en-GB)**.
 - Always use `tyre` (never `tire`), `initialise` (never `initialize`), `synchronise` (never `synchronize`), `colour` (never `color`), `millimetre` (never `millimeter`), etc.
 
+### Environment Configuration
+- Environment secrets, API keys, and local overrides belong in `.env` (template provided in `.env.example`).
+- Never commit `.env` to version control. Docker Compose and Spring Boot fall back to safe local development defaults if `.env` is absent.
+
 ## Development Commands
 
 ### Full Stack via Docker Compose (Recommended)
