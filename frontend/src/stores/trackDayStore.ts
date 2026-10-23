@@ -101,10 +101,15 @@ export const useBaseTrackDayStore = defineStore('trackDay', () => {
       throw new Error('An active track day must be selected to create a session')
     }
 
+    const existingSessions = await database.value.sessions
+      .where('trackDayId')
+      .equals(targetTrackDayId)
+      .toArray()
+
     const calculatedNumber =
       input.sessionNumber ??
-      (sessions.value.length > 0
-        ? Math.max(...sessions.value.map((s) => s.sessionNumber)) + 1
+      (existingSessions.length > 0
+        ? Math.max(...existingSessions.map((s) => s.sessionNumber)) + 1
         : 1)
 
     const now = new Date().toISOString()

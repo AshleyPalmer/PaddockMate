@@ -60,6 +60,10 @@ export const useBaseTyreReadingStore = defineStore('tyreReading', () => {
   }
 
   async function saveReading(input: SaveTyreReadingInput): Promise<TyreReadingEntity> {
+    if (currentSessionId.value !== input.sessionId) {
+      await fetchReadingsForSession(input.sessionId)
+    }
+
     const now = new Date().toISOString()
     const existing = await database.value.tyreReadings
       .where('[sessionId+corner]')
@@ -121,6 +125,10 @@ export const useBaseTyreReadingStore = defineStore('tyreReading', () => {
     sessionId: string,
     cornerInputs: BatchTyreReadingInput
   ): Promise<Record<TyreReadingCorner, TyreReadingEntity | null>> {
+    if (currentSessionId.value !== sessionId) {
+      await fetchReadingsForSession(sessionId)
+    }
+
     const now = new Date().toISOString()
     const corners: TyreReadingCorner[] = ['FL', 'FR', 'RL', 'RR']
 

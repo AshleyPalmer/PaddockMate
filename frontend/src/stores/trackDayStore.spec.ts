@@ -64,7 +64,7 @@ describe('useTrackDayStore', () => {
 
     const session1 = await store.createSession({
       timeOfDay: '09:30',
-      notes: 'Sighting laps',
+      notes: 'Morning sighting session',
     })
 
     expect(session1.trackDayId).toBe(trackDay.id)
@@ -75,7 +75,7 @@ describe('useTrackDayStore', () => {
 
     const session2 = await store.createSession({
       timeOfDay: '10:45',
-      notes: 'First quick stint',
+      notes: 'First quick track session',
     })
 
     expect(session2.sessionNumber).toBe(2)

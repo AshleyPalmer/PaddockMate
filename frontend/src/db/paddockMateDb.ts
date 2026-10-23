@@ -112,13 +112,13 @@ export class PaddockMateDB extends Dexie {
     })
 
     this.on('populate', () => {
-      seedUkTracksIfEmpty(this)
+      return seedUkTracksIfEmpty(this)
     })
   }
 }
 
 /**
- * Pre-populates common UK motorsport circuits and their layouts if the tracks table is empty.
+ * Pre-populates common UK tracks and their layouts if the tracks table is empty.
  */
 export async function seedUkTracksIfEmpty(db: PaddockMateDB): Promise<void> {
   const existingCount = await db.tracks.count()
@@ -154,10 +154,8 @@ export async function seedUkTracksIfEmpty(db: PaddockMateDB): Promise<void> {
     }
   }
 
-  await db.transaction('rw', [db.tracks, db.layouts], async () => {
-    await db.tracks.bulkAdd(tracksToInsert)
-    await db.layouts.bulkAdd(layoutsToInsert)
-  })
+  await db.tracks.bulkAdd(tracksToInsert)
+  await db.layouts.bulkAdd(layoutsToInsert)
 }
 
 // Singleton database instance for application runtime

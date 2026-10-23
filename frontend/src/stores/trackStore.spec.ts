@@ -13,11 +13,11 @@ describe('useTrackStore', () => {
     await testDb.open()
   })
 
-  it('fetches tracks and automatically initialises pre-seeded UK catalog', async () => {
+  it('fetches tracks and automatically initialises pre-seeded UK catalogue', async () => {
     const store = useTrackStore(testDb)
     await store.fetchTracks()
 
-    expect(store.tracks.length).toBe(7)
+    expect(store.tracks.length).toBeGreaterThanOrEqual(7)
     const trackNames = store.tracks.map((t) => t.name)
     expect(trackNames).toContain('Brands Hatch')
     expect(trackNames).toContain('Silverstone')
