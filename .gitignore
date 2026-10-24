@@ -24,6 +24,7 @@ dist-ssr/
 
 # Temporary / Scratch
 .scratch/
+docs/superpowers/
 .env
 .env.*
 !.env.example

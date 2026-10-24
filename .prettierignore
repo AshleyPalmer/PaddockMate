@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage
+.gradle
+build
+package-lock.json
+.git
+frontend/dist
+frontend/dev-dist

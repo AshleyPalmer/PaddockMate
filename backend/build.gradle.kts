@@ -1,7 +1,9 @@
 plugins {
 	java
+	checkstyle
 	id("org.springframework.boot") version "4.1.1"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("com.diffplug.spotless") version "7.0.2"
 }
 
 group = "com.paddockmate"
@@ -37,4 +39,24 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+checkstyle {
+	toolVersion = "10.18.1"
+	configFile = file("config/checkstyle/checkstyle.xml")
+	isIgnoreFailures = false
+}
+
+spotless {
+	java {
+		target("src/**/*.java")
+		googleJavaFormat().aosp().reflowLongStrings()
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
+
+tasks.named("check") {
+	dependsOn("spotlessCheck")
 }

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+npx --no -- commitlint --edit "$1"
+cat "$1" | npx cspell --no-summary stdin
