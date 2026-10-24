@@ -74,6 +74,7 @@
     "backend/gradlew*",
     "cspell.json",
     "CONTEXT.md",
+    "AGENTS.md",
     "docs/agents/**",
     "docs/superpowers/**"
   ]
