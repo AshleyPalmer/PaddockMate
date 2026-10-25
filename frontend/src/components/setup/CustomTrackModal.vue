@@ -137,7 +137,7 @@ async function handleSubmit() {
             CUSTOM TRACK / LAYOUT
           </div>
           <h2 id="custom-track-modal-title" class="text-xl font-black text-white">
-            Add Custom Track
+            {{ mode === "new-track" ? "Add Custom Track" : "Add Custom Layout" }}
           </h2>
         </div>
         <button
@@ -254,7 +254,7 @@ async function handleSubmit() {
             Cancel
           </PmButton>
           <PmButton type="submit" variant="primary" class="min-h-[48px] flex-1">
-            Save Track ✓
+            {{ mode === "new-track" ? "Save Track ✓" : "Save Layout ✓" }}
           </PmButton>
         </div>
       </form>

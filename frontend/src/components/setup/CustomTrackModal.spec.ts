@@ -103,9 +103,13 @@ describe("CustomTrackModal", () => {
     });
 
     // When defaultTrackId is provided, mode switches to existing-track
+    expect(wrapper.find("#custom-track-modal-title").text()).toBe("Add Custom Layout");
     const select = wrapper.find("select#custom-track-select");
     expect(select.exists()).toBe(true);
     expect((select.element as HTMLSelectElement).value).toBe(silverstone.id);
+
+    const submitBtn = wrapper.find('button[type="submit"]');
+    expect(submitBtn.text()).toContain("Save Layout ✓");
 
     await wrapper.find("input#custom-layout-name").setValue("Stowe Circuit");
     await wrapper.find("input#custom-layout-length").setValue("1738");

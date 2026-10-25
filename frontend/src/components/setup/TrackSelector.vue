@@ -192,6 +192,7 @@ function selectLayout(trackId: string, layoutId: string) {
 }
 
 function handleCustomCreated(payload: { trackId: string; layoutId: string }) {
+  searchQuery.value = "";
   selectLayout(payload.trackId, payload.layoutId);
 }
 </script>

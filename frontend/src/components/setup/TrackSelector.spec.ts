@@ -208,6 +208,37 @@ describe("TrackSelector", () => {
     expect(lastSelect[1]).toBeTypeOf("string");
   });
 
+  it("clears search query upon custom track creation so new track is immediately visible", async () => {
+    const wrapper = mount(TrackSelector, {
+      global: { provide: { db: testDb } },
+    });
+    await new Promise((r) => setTimeout(r, 50));
+
+    // Type a search query that yields zero results
+    const searchInput = wrapper.find('input[type="search"]');
+    await searchInput.setValue("UnknownTrackABC");
+    expect(wrapper.text()).toContain('No tracks found matching "UnknownTrackABC"');
+
+    // Click "+ Add Custom Track or Layout" from empty state
+    const addBtn = wrapper
+      .findAll("button")
+      .find((b) => b.text().includes("Add Custom Track or Layout"))!;
+    await addBtn.trigger("click");
+
+    const modal = wrapper.find('[role="dialog"]');
+    await modal.find("input#custom-track-name").setValue("Mallory Park");
+    await modal.find("input#custom-layout-name").setValue("Grand Prix");
+    await modal.find("form").trigger("submit.prevent");
+    await new Promise((r) => setTimeout(r, 50));
+
+    // Search input should be cleared
+    expect((wrapper.find('input[type="search"]').element as HTMLInputElement).value).toBe("");
+
+    // Mallory Park should be visible and expanded in the list
+    expect(wrapper.text()).toContain("MALLORY PARK");
+    expect(wrapper.text()).toContain("Grand Prix");
+  });
+
   it("enforces minimum 48px touch targets on interactive controls", async () => {
     const wrapper = mount(TrackSelector, {
       global: { provide: { db: testDb } },
