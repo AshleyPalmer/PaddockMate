@@ -60,6 +60,10 @@ _Avoid_: Alignment profile, chassis tune
 A reference configuration (geometry, damper clicks, and target tyre pressures) for a Vehicle at a specific Track Layout, used to initialise a new Track Day.
 _Avoid_: Starting template, default setup, preset
 
+**Vehicle Default Pressures**:
+The fallback Cold and Target tyre pressures configured on a Vehicle profile, used to initialise tyre readings when no layout-specific Baseline Setup exists.
+_Avoid_: Vehicle presets, default setup, car defaults
+
 **Damper Setting**:
 Adjustment clicks recorded for suspension damping (bump, rebound, fast bump, fast rebound) per damper.
 _Avoid_: Clickers, shock settings, stiffness

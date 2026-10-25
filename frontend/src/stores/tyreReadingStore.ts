@@ -212,6 +212,7 @@ export const useBaseTyreReadingStore = defineStore("tyreReading", () => {
     setDatabase,
     fetchReadingsForSession,
     saveReading,
+    saveTyreReading: saveReading,
     batchSaveReadings,
   };
 });

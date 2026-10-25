@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+:root {
+  /* Default: Dark Obsidian & Electric Lime (Figma) */
+  --pm-bg: #0b0f17;
+  --pm-surface: #161b22;
+  --pm-surface-raised: #1c2330;
+  --pm-border: #2d3748;
+  --pm-ink: #f0f6fc;
+  --pm-ink-muted: #8b949e;
+  --pm-accent: #d4f933;
+  --pm-accent-ink: #000000;
+  --pm-status-bleed: #fde047;
+  --pm-status-inflate: #3b82f6;
+  --pm-status-target: #22c55e;
+}
+
+[data-theme="sunlight"] {
+  /* Sunlight Mode: 21:1 Pure Black ink on White */
+  --pm-bg: #ffffff;
+  --pm-surface: #ffffff;
+  --pm-surface-raised: #f3f4f6;
+  --pm-border: #000000;
+  --pm-ink: #000000;
+  --pm-ink-muted: #4b5563;
+  --pm-accent: #000000;
+  --pm-accent-ink: #ffffff;
+  --pm-status-bleed: #fde047;
+  --pm-status-inflate: #1e40af;
+  --pm-status-target: #15803d;
+}
+
+body {
+  /* cspell:disable-next-line */
+  background-color: var(--pm-bg);
+  /* cspell:disable-next-line */
+  color: var(--pm-ink);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
