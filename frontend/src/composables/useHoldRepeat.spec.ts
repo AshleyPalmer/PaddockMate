@@ -25,7 +25,6 @@ describe("useHoldRepeat", () => {
     const { handlers } = useHoldRepeat(action, {
       initialDelayMs: 400,
       stepIntervalMs: 100,
-      accelerationIntervalMs: 50,
       minIntervalMs: 30,
     });
 

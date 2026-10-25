@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import "fake-indexeddb/auto";
 import TrackDaySetupView from "./TrackDaySetupView.vue";
 import { PaddockMateDB } from "../db/paddockMateDb";
+import PmStepper from "../components/ui/PmStepper.vue";
 import { useTrackDayStore } from "../stores/trackDayStore";
 import { useTrackStore } from "../stores/trackStore";
 import { useTyreReadingStore } from "../stores/tyreReadingStore";
@@ -192,8 +193,79 @@ describe("TrackDaySetupView", () => {
     const tyreReadingStore = useTyreReadingStore(testDb);
     const readings = await tyreReadingStore.fetchReadingsForSession(sessions[0].id);
     expect(readings.FL?.coldPressure).toBe(28.1);
+    expect(readings.FR?.coldPressure).toBe(28.0);
+    expect(readings.RL?.coldPressure).toBe(27.0);
+    expect(readings.RR?.coldPressure).toBe(27.0);
 
     expect(pushSpy).toHaveBeenCalledWith(`/track-days/${createdTrackDay.id}/session/1`);
+  });
+
+  it("renders dynamic stepper limits and values for BAR and KPA vehicles", async () => {
+    const vehicleStore = useVehicleStore(testDb);
+    const barVehicle = await vehicleStore.createVehicle({
+      make: "Porsche",
+      model: "911 GT3",
+      nickname: "GT3",
+      pressureUnit: "BAR",
+      defaultColdPressureFl: 1.85,
+      defaultColdPressureFr: 1.85,
+      defaultColdPressureRl: 2.05,
+      defaultColdPressureRr: 2.05,
+      defaultTargetPressureFl: 2.15,
+      defaultTargetPressureRl: 2.35,
+    });
+    vehicleStore.setActiveVehicle(barVehicle.id);
+
+    const wrapper = mount(TrackDaySetupView, {
+      global: {
+        provide: { db: testDb },
+        plugins: [router],
+      },
+    });
+
+    await new Promise((r) => setTimeout(r, 60));
+
+    const barSteppers = wrapper.findAllComponents(PmStepper);
+    expect(barSteppers.length).toBe(6);
+
+    for (const stepper of barSteppers) {
+      expect(stepper.props("min")).toBe(0.5);
+      expect(stepper.props("max")).toBe(4.0);
+      expect(stepper.props("step")).toBe(0.05);
+      expect(stepper.props("decimals")).toBe(2);
+      expect(stepper.props("unit")).toBe("BAR");
+    }
+
+    expect(wrapper.find('[data-testid="stepper-cold-fl"]').text()).toContain("1.85");
+    expect(wrapper.find('[data-testid="stepper-cold-fl"]').text()).toContain("BAR");
+
+    // Switch to KPA vehicle
+    const kpaVehicle = await vehicleStore.createVehicle({
+      make: "Volkswagen",
+      model: "Golf",
+      nickname: "Track Golf",
+      pressureUnit: "KPA",
+      defaultColdPressureFl: 200,
+      defaultColdPressureFr: 200,
+      defaultColdPressureRl: 190,
+      defaultColdPressureRr: 190,
+      defaultTargetPressureFl: 220,
+      defaultTargetPressureRl: 210,
+    });
+    vehicleStore.setActiveVehicle(kpaVehicle.id);
+    await wrapper.vm.$nextTick();
+
+    const kpaSteppers = wrapper.findAllComponents(PmStepper);
+    for (const stepper of kpaSteppers) {
+      expect(stepper.props("min")).toBe(50);
+      expect(stepper.props("max")).toBe(400);
+      expect(stepper.props("step")).toBe(5);
+      expect(stepper.props("decimals")).toBe(0);
+      expect(stepper.props("unit")).toBe("KPA");
+    }
+
+    expect(wrapper.find('[data-testid="stepper-cold-fl"]').text()).toContain("200");
+    expect(wrapper.find('[data-testid="stepper-cold-fl"]').text()).toContain("KPA");
   });
 
   it("displays empty vehicle warning if no vehicle exists in garage", async () => {

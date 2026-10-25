@@ -230,7 +230,7 @@ async function handleSubmit() {
           id="custom-layout-name"
           v-model="form.layoutName"
           label="Layout Name"
-          placeholder="e.g. Full Circuit, Grand Prix, or Club"
+          placeholder="e.g. Grand Prix, National, or Club Layout"
           :required="true"
           :error="errors.layoutName"
         />

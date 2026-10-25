@@ -68,7 +68,7 @@ function continueToTrackDay() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#0b0f17] text-white">
+  <div class="min-h-screen bg-[var(--pm-bg)] text-[var(--pm-ink)]">
     <main class="mx-auto max-w-2xl px-4 py-8 pb-32">
       <!-- Header -->
       <header class="mb-6">

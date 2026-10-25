@@ -1,14 +1,13 @@
 /**
  * Composable providing hold-to-repeat interaction behaviour for stepper controls.
  * Invokes callback immediately on initial press, then repeats with acceleration
- * until released or cancelled.
+ * using a 0.85 geometric decay factor on step intervals until released or cancelled.
  */
 import { ref, onBeforeUnmount, getCurrentInstance } from "vue";
 
 export interface HoldRepeatOptions {
   initialDelayMs?: number;
   stepIntervalMs?: number;
-  accelerationIntervalMs?: number;
   minIntervalMs?: number;
 }
 

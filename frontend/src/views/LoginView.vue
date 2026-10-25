@@ -44,7 +44,7 @@ function handleSignIn() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#0b0f17] text-white">
+  <div class="min-h-screen bg-[var(--pm-bg)] text-[var(--pm-ink)]">
     <main class="mx-auto flex w-full max-w-md flex-col px-4 py-8 pb-20 sm:py-12">
       <!-- PaddockMate Logo Header -->
       <header class="mb-8 flex items-center justify-between">

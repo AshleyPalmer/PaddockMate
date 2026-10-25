@@ -80,36 +80,50 @@ const selectedLayout = computed(() => {
 
 const pressureUnit = computed(() => activeVehicle.value?.pressureUnit ?? "PSI");
 
+const pressureLimits = computed(() => {
+  if (pressureUnit.value === "BAR") {
+    return { min: 0.5, max: 4.0, step: 0.05, decimals: 2 };
+  }
+  if (pressureUnit.value === "KPA") {
+    return { min: 50, max: 400, step: 5, decimals: 0 };
+  }
+  return { min: 10.0, max: 50.0, step: 0.1, decimals: 1 };
+});
+
 // Predicted thermal growth deltas
 const frontThermalGrowth = computed(() => {
   const avgCold = (coldFl.value + coldFr.value) / 2;
   const delta = targetFront.value - avgCold;
   const sign = delta >= 0 ? "+" : "";
-  return `${sign}${delta.toFixed(1)} ${pressureUnit.value}`;
+  return `${sign}${delta.toFixed(pressureLimits.value.decimals)} ${pressureUnit.value}`;
 });
 
 const rearThermalGrowth = computed(() => {
   const avgCold = (coldRl.value + coldRr.value) / 2;
   const delta = targetRear.value - avgCold;
   const sign = delta >= 0 ? "+" : "";
-  return `${sign}${delta.toFixed(1)} ${pressureUnit.value}`;
+  return `${sign}${delta.toFixed(pressureLimits.value.decimals)} ${pressureUnit.value}`;
 });
 
 function syncPressuresFromVehicle() {
   const vehicle = activeVehicle.value;
   if (!vehicle) return;
 
-  if (vehicle.defaultColdPressureFl !== undefined) coldFl.value = vehicle.defaultColdPressureFl;
-  if (vehicle.defaultColdPressureFr !== undefined) coldFr.value = vehicle.defaultColdPressureFr;
-  if (vehicle.defaultColdPressureRl !== undefined) coldRl.value = vehicle.defaultColdPressureRl;
-  if (vehicle.defaultColdPressureRr !== undefined) coldRr.value = vehicle.defaultColdPressureRr;
+  const defaultCold =
+    vehicle.pressureUnit === "BAR" ? 1.8 : vehicle.pressureUnit === "KPA" ? 180 : 28.0;
+  const defaultTarget =
+    vehicle.pressureUnit === "BAR" ? 2.1 : vehicle.pressureUnit === "KPA" ? 210 : 32.0;
 
-  if (vehicle.defaultTargetPressureFl !== undefined) {
-    targetFront.value = vehicle.defaultTargetPressureFl;
-  }
-  if (vehicle.defaultTargetPressureRl !== undefined) {
-    targetRear.value = vehicle.defaultTargetPressureRl;
-  }
+  coldFl.value = vehicle.defaultColdPressureFl ?? defaultCold;
+  coldFr.value = vehicle.defaultColdPressureFr ?? defaultCold;
+  coldRl.value =
+    vehicle.defaultColdPressureRl ?? (vehicle.pressureUnit === "PSI" ? 27.0 : defaultCold);
+  coldRr.value =
+    vehicle.defaultColdPressureRr ?? (vehicle.pressureUnit === "PSI" ? 27.0 : defaultCold);
+
+  targetFront.value = vehicle.defaultTargetPressureFl ?? defaultTarget;
+  targetRear.value =
+    vehicle.defaultTargetPressureRl ?? (vehicle.pressureUnit === "PSI" ? 31.0 : defaultTarget);
 }
 
 watch(
@@ -189,33 +203,25 @@ async function handleStartTrackDay() {
       sessionNumber: 1,
     });
 
-    // 3. Seed baseline Tyre Readings for all 4 corners
-    await Promise.all([
-      tyreReadingStore.saveReading({
-        sessionId: session.id,
-        corner: "FL",
+    // 3. Seed baseline Tyre Readings for all 4 corners atomically
+    await tyreReadingStore.batchSaveReadings(session.id, {
+      FL: {
         coldPressure: coldFl.value,
         targetPressure: targetFront.value,
-      }),
-      tyreReadingStore.saveReading({
-        sessionId: session.id,
-        corner: "FR",
+      },
+      FR: {
         coldPressure: coldFr.value,
         targetPressure: targetFront.value,
-      }),
-      tyreReadingStore.saveReading({
-        sessionId: session.id,
-        corner: "RL",
+      },
+      RL: {
         coldPressure: coldRl.value,
         targetPressure: targetRear.value,
-      }),
-      tyreReadingStore.saveReading({
-        sessionId: session.id,
-        corner: "RR",
+      },
+      RR: {
         coldPressure: coldRr.value,
         targetPressure: targetRear.value,
-      }),
-    ]);
+      },
+    });
 
     // 4. Transition to Session 1 tyre monitoring view
     await router.push(`/track-days/${trackDay.id}/session/1`);
@@ -226,7 +232,10 @@ async function handleStartTrackDay() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#0b0f17] text-white" data-testid="track-day-setup-view">
+  <div
+    class="min-h-screen bg-[var(--pm-bg)] text-[var(--pm-ink)]"
+    data-testid="track-day-setup-view"
+  >
     <main class="mx-auto max-w-2xl px-4 py-8 pb-32">
       <!-- Wizard Step Header -->
       <nav aria-label="Wizard progress" class="mb-6">
@@ -429,9 +438,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="coldFl"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
@@ -451,9 +461,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="coldFr"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
@@ -473,9 +484,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="coldRl"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
@@ -495,9 +507,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="coldRr"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
@@ -529,9 +542,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="targetFront"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
@@ -547,9 +561,10 @@ async function handleStartTrackDay() {
                 </div>
                 <PmStepper
                   v-model="targetRear"
-                  :step="0.1"
-                  :min="10.0"
-                  :max="50.0"
+                  :step="pressureLimits.step"
+                  :min="pressureLimits.min"
+                  :max="pressureLimits.max"
+                  :decimals="pressureLimits.decimals"
                   :unit="pressureUnit"
                 />
               </div>
