@@ -31,7 +31,8 @@
 }
 
 body {
-  background: var(--pm-bg);
+  /* cspell:disable-next-line */
+  background-color: var(--pm-bg);
   /* cspell:disable-next-line */
   color: var(--pm-ink);
   font-family:

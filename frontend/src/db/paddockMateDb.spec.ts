@@ -78,4 +78,39 @@ describe("PaddockMateDB and UK Track Seeding", () => {
     expect(await db.tracks.count()).toBe(initialTrackCount);
     expect(await db.layouts.count()).toBe(initialLayoutCount);
   });
+
+  it("persists and retrieves a vehicle entity with drivetrain, tyre specs, and pressure unit", async () => {
+    const vehicleId = "11111111-2222-7333-8444-555555555555";
+    const now = new Date().toISOString();
+
+    await db.vehicles.add({
+      id: vehicleId,
+      make: "Porsche",
+      model: "911 GT3",
+      year: 2022,
+      nickname: "GT3 Track",
+      drivetrain: "RWD",
+      tyreModel: "Michelin Pilot Sport Cup 2 R",
+      frontTyreSize: "255/35 R20",
+      rearTyreSize: "315/30 R21",
+      suspension: "Adaptive Sport",
+      pressureUnit: "BAR",
+      defaultColdPressureFl: 1.8,
+      defaultColdPressureFr: 1.8,
+      defaultColdPressureRl: 1.9,
+      defaultColdPressureRr: 1.9,
+      createdAt: now,
+      updatedAt: now,
+      syncStatus: "synced",
+    });
+
+    const retrieved = await db.vehicles.get(vehicleId);
+    expect(retrieved).toBeDefined();
+    expect(retrieved?.drivetrain).toBe("RWD");
+    expect(retrieved?.tyreModel).toBe("Michelin Pilot Sport Cup 2 R");
+    expect(retrieved?.frontTyreSize).toBe("255/35 R20");
+    expect(retrieved?.rearTyreSize).toBe("315/30 R21");
+    expect(retrieved?.suspension).toBe("Adaptive Sport");
+    expect(retrieved?.pressureUnit).toBe("BAR");
+  });
 });

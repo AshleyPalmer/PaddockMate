@@ -2,12 +2,21 @@ import Dexie, { type Table } from "dexie";
 import { generateUuid } from "../utils/uuid";
 import { UK_TRACK_SEEDS } from "./seeds/ukTracks";
 
+export type Drivetrain = "RWD" | "FWD" | "AWD";
+export type PressureUnit = "PSI" | "BAR" | "KPA";
+
 export interface VehicleEntity {
   id: string;
   make: string;
   model: string;
   year?: number;
   nickname?: string;
+  drivetrain?: Drivetrain;
+  tyreModel?: string;
+  frontTyreSize?: string;
+  rearTyreSize?: string;
+  suspension?: string;
+  pressureUnit?: PressureUnit;
   defaultColdPressureFl?: number;
   defaultColdPressureFr?: number;
   defaultColdPressureRl?: number;

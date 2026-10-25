@@ -1,7 +1,15 @@
 import { defineStore } from "pinia";
 import { computed, ref, shallowRef } from "vue";
-import { db, type PaddockMateDB, type VehicleEntity } from "../db/paddockMateDb";
+import {
+  db,
+  type Drivetrain,
+  type PaddockMateDB,
+  type PressureUnit,
+  type VehicleEntity,
+} from "../db/paddockMateDb";
 import { generateUuid } from "../utils/uuid";
+
+export type { Drivetrain, PressureUnit };
 
 export type CreateVehicleInput = Omit<
   VehicleEntity,
