@@ -33,4 +33,17 @@ describe("App Shell", () => {
     expect(wrapper.find("main").exists()).toBe(true);
     expect(wrapper.text()).toContain("BUILT FOR THE PIT LANE");
   });
+
+  it("mounts app and resolves default route to track-days/new", async () => {
+    const router = createPaddockRouter(true);
+    await router.push("/");
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: { plugins: [router] },
+    });
+
+    expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.text()).toContain("TRACK DAY INITIALISATION");
+  });
 });
