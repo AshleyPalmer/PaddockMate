@@ -150,7 +150,7 @@ async function persistCorner(corner: Corner) {
 
 function adjustHot(delta: number) {
   const tyre = tyres.value[activeCorner.value];
-  tyre.hotPressure = Number(Math.max(10, tyre.hotPressure + delta).toFixed(1));
+  tyre.hotPressure = Number(Math.min(50.0, Math.max(10.0, tyre.hotPressure + delta)).toFixed(1));
   haptic(8);
   persistCorner(activeCorner.value);
 }
@@ -165,7 +165,9 @@ function setToTarget() {
 
 function adjustTarget(delta: number) {
   const tyre = tyres.value[activeCorner.value];
-  tyre.targetPressure = Number(Math.max(10, tyre.targetPressure + delta).toFixed(1));
+  tyre.targetPressure = Number(
+    Math.min(50.0, Math.max(10.0, tyre.targetPressure + delta)).toFixed(1)
+  );
   haptic(8);
   persistCorner(activeCorner.value);
 }

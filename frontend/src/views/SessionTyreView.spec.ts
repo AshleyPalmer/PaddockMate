@@ -272,6 +272,38 @@ describe("SessionTyreView", () => {
     expect(tyreStore.readings.FL?.temperature).toBe(69);
   });
 
+  it("clamps hot pressure and target pressure between 10.0 and 50.0 PSI bounds", async () => {
+    // Seed initial reading near 50.0 PSI for corner RR
+    await testDb.tyreReadings.where("[sessionId+corner]").equals([sampleSessionId, "RR"]).modify({
+      hotPressure: 49.5,
+      targetPressure: 49.5,
+    });
+
+    const wrapper = createWrapper();
+    await new Promise((r) => setTimeout(r, 60));
+
+    // Select RR
+    await wrapper.find('[data-testid="corner-card-RR"]').trigger("click");
+    expect(wrapper.find('[data-testid="hot-pressure-readout"]').text()).toContain("49.5");
+
+    // Click +1.0 coarse button -> should clamp to 50.0, not 50.5
+    const btnPlus1 = wrapper.find('[data-testid="btn-hot-plus-1"]');
+    await btnPlus1.trigger("click");
+    await new Promise((r) => setTimeout(r, 60));
+
+    expect(wrapper.find('[data-testid="hot-pressure-readout"]').text()).toContain("50.0");
+
+    // Increase target pressure past 50.0 -> should clamp at 50.0
+    const btnTargetInc = wrapper.find('[data-testid="btn-target-inc"]');
+    for (let i = 0; i < 6; i++) {
+      await btnTargetInc.trigger("pointerdown");
+      await btnTargetInc.trigger("pointerup");
+    }
+    await new Promise((r) => setTimeout(r, 60));
+
+    expect(wrapper.find('[data-testid="target-pressure-readout"]').text()).toContain("50.0");
+  });
+
   it("displays summary badge counts across all corners", async () => {
     const wrapper = createWrapper();
     await new Promise((r) => setTimeout(r, 60));
