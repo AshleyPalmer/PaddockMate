@@ -12,6 +12,8 @@ export interface VehicleEntity {
   year?: number;
   nickname?: string;
   drivetrain?: Drivetrain;
+  chassis?: string;
+  fuel?: string;
   tyreModel?: string;
   frontTyreSize?: string;
   rearTyreSize?: string;
