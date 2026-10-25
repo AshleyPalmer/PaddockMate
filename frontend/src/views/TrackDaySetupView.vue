@@ -37,6 +37,13 @@ function formatTodayBritishDate(): string {
 function parseBritishDateToIso(britishDate: string): string {
   const parts = britishDate.replace(/\s+/g, "").split(/[/.-]/);
   if (parts.length === 3) {
+    if (parts[0].length === 4) {
+      // Already ISO format YYYY-MM-DD
+      const year = parts[0];
+      const month = parts[1].padStart(2, "0");
+      const day = parts[2].padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
     const day = parts[0].padStart(2, "0");
     const month = parts[1].padStart(2, "0");
     const year = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
@@ -282,7 +289,7 @@ async function handleStartTrackDay() {
             SELECT TRACK & LAYOUT
           </h1>
           <p class="text-sm font-medium text-gray-400">
-            Pick the circuit facility and layout configuration you are taking on today.
+            Pick the track facility and layout you are taking on today.
           </p>
         </header>
 
@@ -379,15 +386,16 @@ async function handleStartTrackDay() {
               />
             </div>
             <div>
-              <label class="text-xs font-black tracking-wider text-gray-400 uppercase">
-                AMBIENT PADDOCK TEMP (°C)
-              </label>
-              <input
-                v-model.number="ambientTemperature"
+              <PmInput
+                :model-value="ambientTemperature !== undefined ? String(ambientTemperature) : ''"
                 type="number"
                 name="ambientTemperature"
+                label="AMBIENT PADDOCK TEMP (°C)"
                 placeholder="e.g. 18"
-                class="mt-1.5 min-h-[48px] w-full rounded-xl border border-[#2d3748] bg-[#0b0f17] px-4 py-2.5 text-base font-medium text-white transition placeholder:text-gray-600 focus:border-[#d4f933] focus:ring-1 focus:ring-[#d4f933] focus:outline-none"
+                @update:model-value="
+                  ambientTemperature =
+                    $event !== '' && !isNaN(Number($event)) ? Number($event) : undefined
+                "
               />
             </div>
           </div>
@@ -401,7 +409,7 @@ async function handleStartTrackDay() {
               <span class="text-xs font-semibold text-gray-400">Unit: {{ pressureUnit }}</span>
             </div>
             <p class="text-xs text-gray-400">
-              Set cold starting pressures before heading onto the circuit for Session 1.
+              Set cold starting pressures before heading onto the track for Session 1.
             </p>
 
             <!-- 2x2 Chassis Grid -->
@@ -557,7 +565,7 @@ async function handleStartTrackDay() {
               <span class="font-mono text-xs font-bold text-gray-400">ESTIMATED RISE</span>
             </div>
             <p class="text-xs text-gray-300">
-              Based on your cold starting baseline, expected on-circuit thermal pressure expansion:
+              Based on your cold starting baseline, expected on-track thermal pressure expansion:
             </p>
             <div class="flex flex-wrap items-center gap-4 pt-1 font-mono text-sm">
               <div class="flex items-center gap-1.5">

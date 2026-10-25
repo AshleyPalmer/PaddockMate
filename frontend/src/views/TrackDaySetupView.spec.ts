@@ -215,4 +215,27 @@ describe("TrackDaySetupView", () => {
     const startBtn = wrapper.find('[data-testid="btn-start-track-day"]');
     expect((startBtn.element as HTMLButtonElement).disabled).toBe(true);
   });
+
+  it("handles date already formatted as ISO YYYY-MM-DD without inverting", async () => {
+    const wrapper = mount(TrackDaySetupView, {
+      global: {
+        provide: { db: testDb },
+        plugins: [router],
+      },
+    });
+
+    await new Promise((r) => setTimeout(r, 60));
+
+    const dateInput = wrapper.find('input[name="trackDayDate"]');
+    await dateInput.setValue("2026-09-20");
+
+    const startBtn = wrapper.find('[data-testid="btn-start-track-day"]');
+    await startBtn.trigger("click");
+    await new Promise((r) => setTimeout(r, 60));
+
+    const trackDayStore = useTrackDayStore(testDb);
+    await trackDayStore.fetchTrackDays();
+    const createdTrackDay = trackDayStore.trackDays[0];
+    expect(createdTrackDay.date).toBe("2026-09-20");
+  });
 });
