@@ -27,13 +27,15 @@ function adjust(delta: number) {
   const next = Number(
     Math.min(props.max, Math.max(props.min, props.modelValue + delta)).toFixed(props.decimals)
   );
-  emit("update:modelValue", next);
-  if (
-    typeof globalThis !== "undefined" &&
-    "navigator" in globalThis &&
-    typeof (globalThis.navigator as Navigator | undefined)?.vibrate === "function"
-  ) {
-    (globalThis.navigator as Navigator).vibrate(8);
+  if (next !== props.modelValue) {
+    emit("update:modelValue", next);
+    if (
+      typeof globalThis !== "undefined" &&
+      "navigator" in globalThis &&
+      typeof (globalThis.navigator as Navigator | undefined)?.vibrate === "function"
+    ) {
+      (globalThis.navigator as Navigator).vibrate(8);
+    }
   }
 }
 
@@ -50,6 +52,8 @@ const inc = useHoldRepeat(() => adjust(props.step));
       class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg bg-[#1c2330] text-2xl font-black text-white transition select-none active:scale-90 active:bg-white active:text-black"
       aria-label="Decrease value"
       v-on="dec.handlers"
+      @keydown.enter.prevent="adjust(-props.step)"
+      @keydown.space.prevent="adjust(-props.step)"
     >
       −
     </button>
@@ -62,6 +66,8 @@ const inc = useHoldRepeat(() => adjust(props.step));
       class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg bg-[#1c2330] text-2xl font-black text-white transition select-none active:scale-90 active:bg-white active:text-black"
       aria-label="Increase value"
       v-on="inc.handlers"
+      @keydown.enter.prevent="adjust(props.step)"
+      @keydown.space.prevent="adjust(props.step)"
     >
       +
     </button>

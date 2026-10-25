@@ -1,4 +1,8 @@
 <script setup lang="ts">
+defineOptions({
+  inheritAttrs: false,
+});
+
 withDefaults(
   defineProps<{
     modelValue: string | number | undefined;
@@ -24,13 +28,18 @@ defineEmits<{
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label v-if="label" class="text-xs font-black tracking-wider text-gray-400 uppercase">
+    <label
+      v-if="label"
+      :for="typeof $attrs.id === 'string' ? $attrs.id : undefined"
+      class="text-xs font-black tracking-wider text-gray-400 uppercase"
+    >
       {{ label }} <span v-if="required" class="text-[#d4f933]">*</span>
     </label>
     <input
       :type="type"
       :value="modelValue ?? ''"
       :placeholder="placeholder"
+      v-bind="$attrs"
       :class="[
         'min-h-[48px] w-full rounded-xl border bg-[#0b0f17] px-4 py-2.5 text-base font-medium text-white transition placeholder:text-gray-600 focus:outline-none',
         error

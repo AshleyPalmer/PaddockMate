@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import PmButton from "./PmButton.vue";
 import PmCard from "./PmCard.vue";
@@ -69,6 +69,17 @@ describe("Tactile UI Primitives", () => {
   });
 
   describe("PmStepper", () => {
+    const vibrateMock = vi.fn();
+
+    beforeEach(() => {
+      vibrateMock.mockClear();
+      Object.defineProperty(navigator, "vibrate", {
+        value: vibrateMock,
+        writable: true,
+        configurable: true,
+      });
+    });
+
     it("renders PmStepper and emits update:modelValue on increment/decrement", async () => {
       const wrapper = mount(PmStepper, {
         props: { modelValue: 28.0, step: 0.5, min: 10, max: 50 },
@@ -87,30 +98,44 @@ describe("Tactile UI Primitives", () => {
       expect(wrapper.emitted("update:modelValue")?.[1]).toEqual([28.5]);
     });
 
-    it("respects min and max clamping boundaries", async () => {
+    it("respects min and max clamping boundaries without redundant emissions or vibration", async () => {
       const minWrapper = mount(PmStepper, {
         props: { modelValue: 10.0, step: 1.0, min: 10.0, max: 20.0 },
       });
       const minButtons = minWrapper.findAll("button");
       await minButtons[0].trigger("pointerdown");
-      expect(minWrapper.emitted("update:modelValue")?.[0]).toEqual([10.0]);
+      expect(minWrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(vibrateMock).not.toHaveBeenCalled();
 
       const maxWrapper = mount(PmStepper, {
         props: { modelValue: 20.0, step: 1.0, min: 10.0, max: 20.0 },
       });
       const maxButtons = maxWrapper.findAll("button");
       await maxButtons[1].trigger("pointerdown");
-      expect(maxWrapper.emitted("update:modelValue")?.[0]).toEqual([20.0]);
+      expect(maxWrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(vibrateMock).not.toHaveBeenCalled();
     });
 
-    it("triggers haptic vibration if supported", async () => {
-      const vibrateMock = vi.fn();
-      Object.defineProperty(navigator, "vibrate", {
-        value: vibrateMock,
-        writable: true,
-        configurable: true,
+    it("supports keyboard accessibility with Enter and Space keys", async () => {
+      const wrapper = mount(PmStepper, {
+        props: { modelValue: 28.0, step: 0.5, min: 10, max: 50 },
       });
+      const buttons = wrapper.findAll("button");
 
+      await buttons[0].trigger("keydown.enter");
+      expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([27.5]);
+
+      await buttons[0].trigger("keydown.space");
+      expect(wrapper.emitted("update:modelValue")?.[1]).toEqual([27.5]);
+
+      await buttons[1].trigger("keydown.enter");
+      expect(wrapper.emitted("update:modelValue")?.[2]).toEqual([28.5]);
+
+      await buttons[1].trigger("keydown.space");
+      expect(wrapper.emitted("update:modelValue")?.[3]).toEqual([28.5]);
+    });
+
+    it("triggers haptic vibration if supported when value changes", async () => {
       const wrapper = mount(PmStepper, {
         props: { modelValue: 30.0 },
       });
@@ -149,6 +174,20 @@ describe("Tactile UI Primitives", () => {
       expect(wrapper.text()).toContain("Registration is required");
       const input = wrapper.find("input");
       expect(input.classes()).toContain("border-red-500");
+    });
+
+    it("passes standard attributes directly to the input element and associates label with id", () => {
+      const wrapper = mount(PmInput, {
+        props: { modelValue: "user@example.com", label: "Email Address" },
+        attrs: { id: "email-input", autocomplete: "email", spellcheck: "false" },
+      });
+      expect(wrapper.attributes("id")).toBeUndefined();
+      const input = wrapper.find("input");
+      expect(input.attributes("id")).toBe("email-input");
+      expect(input.attributes("autocomplete")).toBe("email");
+      expect(input.attributes("spellcheck")).toBe("false");
+      const label = wrapper.find("label");
+      expect(label.attributes("for")).toBe("email-input");
     });
   });
 });
