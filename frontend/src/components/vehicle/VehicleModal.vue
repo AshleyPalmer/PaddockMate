@@ -31,7 +31,7 @@ const pressureLimits = computed(() => {
   if (form.pressureUnit === "KPA") {
     return { min: 50, max: 400, step: 5, label: "50 and 400 KPA" };
   }
-  return { min: 10.0, max: 50.0, step: 0.5, label: "10.0 and 50.0 PSI" };
+  return { min: 10.0, max: 50.0, step: 0.1, label: "10.0 and 50.0 PSI" };
 });
 
 const form = reactive({
@@ -59,6 +59,18 @@ const errors = reactive({
   pressures: "",
 });
 
+function getDefaultCold(unit: PressureUnit): number {
+  if (unit === "BAR") return 1.8;
+  if (unit === "KPA") return 180;
+  return 26.0;
+}
+
+function getDefaultTarget(unit: PressureUnit): number {
+  if (unit === "BAR") return 2.1;
+  if (unit === "KPA") return 210;
+  return 30.0;
+}
+
 function resetForm() {
   if (props.vehicle) {
     form.nickname = props.vehicle.nickname ?? "";
@@ -73,8 +85,8 @@ function resetForm() {
     form.rearTyreSize = props.vehicle.rearTyreSize ?? "";
     form.suspension = props.vehicle.suspension ?? "";
     form.pressureUnit = props.vehicle.pressureUnit ?? "PSI";
-    const defaultCold = form.pressureUnit === "BAR" ? 1.8 : 26.0;
-    const defaultTarget = form.pressureUnit === "BAR" ? 2.1 : 30.0;
+    const defaultCold = getDefaultCold(form.pressureUnit);
+    const defaultTarget = getDefaultTarget(form.pressureUnit);
     form.coldPressureFront = props.vehicle.defaultColdPressureFl ?? defaultCold;
     form.coldPressureRear = props.vehicle.defaultColdPressureRl ?? defaultCold;
     form.targetPressureFront = props.vehicle.defaultTargetPressureFl ?? defaultTarget;
@@ -101,6 +113,24 @@ function resetForm() {
   errors.model = "";
   errors.pressures = "";
 }
+
+watch(
+  () => form.pressureUnit,
+  (newUnit, oldUnit) => {
+    if (!oldUnit || newUnit === oldUnit) return;
+    const limits = pressureLimits.value;
+    if (form.coldPressureFront < limits.min || form.coldPressureFront > limits.max) {
+      const defCold = getDefaultCold(newUnit);
+      form.coldPressureFront = defCold;
+      form.coldPressureRear = defCold;
+    }
+    if (form.targetPressureFront < limits.min || form.targetPressureFront > limits.max) {
+      const defTarget = getDefaultTarget(newUnit);
+      form.targetPressureFront = defTarget;
+      form.targetPressureRear = defTarget;
+    }
+  }
+);
 
 watch(
   () => [props.isOpen, props.vehicle],
@@ -203,7 +233,7 @@ function handleSubmit() {
         </div>
         <button
           type="button"
-          class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-[#1c2330] hover:text-white"
+          class="flex h-12 min-h-[48px] w-12 min-w-[48px] cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-[#1c2330] hover:text-white"
           aria-label="Close modal"
           @click="$emit('close')"
         >
@@ -249,7 +279,7 @@ function handleSubmit() {
               :key="item"
               type="button"
               :class="[
-                'min-h-[44px] cursor-pointer rounded-xl border font-mono text-sm font-black transition',
+                'min-h-[48px] cursor-pointer rounded-xl border font-mono text-sm font-black transition',
                 form.drivetrain === item
                   ? 'border-[#d4f933] bg-[#d4f933] text-black shadow-sm'
                   : 'border-[#2d3748] bg-[#0b0f17] text-white hover:border-gray-500',
@@ -299,7 +329,7 @@ function handleSubmit() {
               :key="unit"
               type="button"
               :class="[
-                'min-h-[44px] cursor-pointer rounded-xl border font-mono text-sm font-black transition',
+                'min-h-[48px] cursor-pointer rounded-xl border font-mono text-sm font-black transition',
                 form.pressureUnit === unit
                   ? 'border-[#d4f933] bg-[#d4f933] text-black shadow-sm'
                   : 'border-[#2d3748] bg-[#0b0f17] text-white hover:border-gray-500',
@@ -385,15 +415,7 @@ function handleSubmit() {
           <PmButton type="button" variant="secondary" class="flex-1" @click="$emit('close')">
             Cancel
           </PmButton>
-          <PmButton
-            type="submit"
-            variant="primary"
-            class="flex-1"
-            @click="handleSubmit"
-            @submit="handleSubmit"
-          >
-            Save vehicle ✓
-          </PmButton>
+          <PmButton type="submit" variant="primary" class="flex-1"> Save vehicle ✓ </PmButton>
         </div>
       </form>
     </div>

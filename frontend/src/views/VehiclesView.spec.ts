@@ -143,6 +143,7 @@ describe("VehiclesView", () => {
     // Click Add vehicle +
     const addBtn = wrapper.find("header button");
     expect(addBtn.text()).toContain("Add vehicle +");
+    expect(addBtn.classes()).toContain("min-h-[48px]");
     await addBtn.trigger("click");
 
     expect(wrapper.find('div[role="dialog"]').exists()).toBe(true);

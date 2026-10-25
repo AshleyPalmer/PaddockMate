@@ -99,7 +99,7 @@ const fittedTyreSizes = computed(() => {
         <div class="pt-1">
           <button
             type="button"
-            class="cursor-pointer text-xs font-bold text-gray-400 underline decoration-dotted transition hover:text-[#d4f933]"
+            class="inline-flex min-h-[48px] cursor-pointer items-center px-2 py-3 text-xs font-bold text-gray-400 underline decoration-dotted transition hover:text-[#d4f933]"
             @click.stop="$emit('edit', vehicle)"
           >
             Edit vehicle

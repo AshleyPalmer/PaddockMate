@@ -113,4 +113,80 @@ describe("VehicleModal", () => {
 
     expect(wrapper.find('div[role="dialog"]').exists()).toBe(false);
   });
+
+  it("enforces minimum 48px touch targets on interactive controls", () => {
+    const wrapper = mount(VehicleModal, {
+      props: { isOpen: true },
+    });
+
+    const closeBtn = wrapper.find('button[aria-label="Close modal"]');
+    expect(closeBtn.classes()).toContain("min-h-[48px]");
+    expect(closeBtn.classes()).toContain("min-w-[48px]");
+
+    const drivetrainBtns = wrapper
+      .findAll("button")
+      .filter((b) => ["RWD", "FWD", "AWD"].includes(b.text()));
+    expect(drivetrainBtns).toHaveLength(3);
+    for (const btn of drivetrainBtns) {
+      expect(btn.classes()).toContain("min-h-[48px]");
+    }
+
+    const unitBtns = wrapper
+      .findAll("button")
+      .filter((b) => ["PSI", "BAR", "KPA"].includes(b.text()));
+    expect(unitBtns).toHaveLength(3);
+    for (const btn of unitBtns) {
+      expect(btn.classes()).toContain("min-h-[48px]");
+    }
+  });
+
+  it("configures PSI steppers with 0.1 step", () => {
+    const wrapper = mount(VehicleModal, {
+      props: { isOpen: true },
+    });
+
+    const steppers = wrapper.findAllComponents({ name: "PmStepper" });
+    expect(steppers.length).toBeGreaterThan(0);
+    for (const stepper of steppers) {
+      expect(stepper.props("step")).toBe(0.1);
+      expect(stepper.props("unit")).toBe("PSI");
+    }
+  });
+
+  it("supports KPA default pressures and unit switching", async () => {
+    const kpaVehicle: VehicleEntity = {
+      id: "v-kpa-1",
+      make: "Toyota",
+      model: "Supra",
+      drivetrain: "RWD",
+      pressureUnit: "KPA",
+      defaultColdPressureFl: 190,
+      defaultColdPressureFr: 190,
+      defaultColdPressureRl: 180,
+      defaultColdPressureRr: 180,
+      defaultTargetPressureFl: 220,
+      defaultTargetPressureFr: 220,
+      defaultTargetPressureRl: 210,
+      defaultTargetPressureRr: 210,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      syncStatus: "synced",
+    };
+
+    const wrapper = mount(VehicleModal, {
+      props: {
+        isOpen: true,
+        vehicle: kpaVehicle,
+      },
+    });
+
+    const form = wrapper.find("form");
+    await form.trigger("submit");
+
+    expect(wrapper.emitted("save")).toBeTruthy();
+    const emitted = wrapper.emitted("save")?.[0][0] as Record<string, unknown>;
+    expect(emitted.pressureUnit).toBe("KPA");
+    expect(emitted.defaultColdPressureFl).toBe(190);
+    expect(emitted.defaultTargetPressureFl).toBe(220);
+  });
 });

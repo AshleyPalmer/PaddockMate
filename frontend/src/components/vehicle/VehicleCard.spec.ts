@@ -91,6 +91,7 @@ describe("VehicleCard", () => {
 
     const editBtn = wrapper.find("button");
     expect(editBtn.text()).toBe("Edit vehicle");
+    expect(editBtn.classes()).toContain("min-h-[48px]");
     await editBtn.trigger("click");
 
     expect(wrapper.emitted("edit")).toBeTruthy();

@@ -80,7 +80,7 @@ function continueToTrackDay() {
           <PmButton
             type="button"
             variant="secondary"
-            class="!min-h-[40px] !w-auto px-3.5 py-2 text-xs"
+            class="!w-auto px-4 py-2.5 text-xs"
             @click="handleAddVehicle"
           >
             Add vehicle +
