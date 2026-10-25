@@ -140,6 +140,7 @@ function handleSignIn() {
 
           <form class="space-y-4" novalidate @submit.prevent="handleSignIn">
             <PmInput
+              id="email"
               v-model="email"
               type="email"
               name="email"
@@ -150,6 +151,7 @@ function handleSignIn() {
             />
 
             <PmInput
+              id="password"
               v-model="password"
               type="password"
               name="password"
@@ -179,7 +181,6 @@ function handleSignIn() {
               type="submit"
               variant="secondary"
               class="min-h-[48px] text-sm font-black tracking-wider uppercase"
-              @click="handleSignIn"
             >
               Sign in →
             </PmButton>

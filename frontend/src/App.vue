@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import AppHeader from "./components/layout/AppHeader.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <div
+    class="min-h-screen bg-[#0b0f17] text-white [data-theme=sunlight]:bg-white [data-theme=sunlight]:text-black"
+  >
+    <AppHeader />
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>

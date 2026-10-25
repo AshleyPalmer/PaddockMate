@@ -72,7 +72,9 @@ describe("LoginView", () => {
     const submitBtn = wrapper.find('[data-testid="btn-sign-in"]');
 
     expect(emailInput.exists()).toBe(true);
+    expect(emailInput.attributes("id")).toBe("email");
     expect(passwordInput.exists()).toBe(true);
+    expect(passwordInput.attributes("id")).toBe("password");
     expect(checkbox.exists()).toBe(true);
     expect(wrapper.text()).toContain("Trust this device");
     expect(submitBtn.exists()).toBe(true);
@@ -84,8 +86,8 @@ describe("LoginView", () => {
       global: { plugins: [router] },
     });
 
-    const submitBtn = wrapper.find('[data-testid="btn-sign-in"]');
-    await submitBtn.trigger("click");
+    const form = wrapper.find("form");
+    await form.trigger("submit");
 
     expect(wrapper.text()).toContain("Email is required");
     expect(wrapper.text()).toContain("Password is required");
@@ -96,7 +98,7 @@ describe("LoginView", () => {
     await emailInput.setValue("driver@paddockmate.app");
     await passwordInput.setValue("SuperSecretLapTime123!");
 
-    await submitBtn.trigger("click");
+    await form.trigger("submit");
     await flushPromises();
 
     expect(router.currentRoute.value.path).toBe("/track-days/new");
