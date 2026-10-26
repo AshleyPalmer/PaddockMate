@@ -13,6 +13,20 @@ PaddockMate is a full-stack open-source application built with a **Java 21 / Spr
 - **Pit-Lane Pressure & Bleed Calculator**: Automatically computes tyre bleed amounts based on off-track hot readings and target pressures.
 - **Circuit Baseline Recalls**: Historical tyre and alignment settings stored per track and layout to initialise baseline settings on arrival.
 
+<table width="100%">
+  <tr>
+    <td width="33.33%" valign="top" align="center">
+      <img alt="Login" src="https://github.com/user-attachments/assets/d6209a64-2c03-4d48-9154-28452aa47b27" />
+    </td>
+    <td width="33.33%" valign="top" align="center">
+      <img alt="Vehicle management" src="https://github.com/user-attachments/assets/0014dcd5-0f0a-4f0d-8b3f-ba1778ee499d" />
+    </td>
+    <td width="33.33%" valign="top" align="center">
+      <img alt="Track and layout selection" src="https://github.com/user-attachments/assets/90a82f55-b4f8-435b-a39a-534084b9f027" />
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## Tech Stack
